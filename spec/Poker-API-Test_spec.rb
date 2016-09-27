@@ -1,7 +1,10 @@
 describe "Api Tests" do
 
   before(:all) do
+    cardz = HTTParty.get url('/api/cards')
+    File.write('./cards.txt', cardz)
     @cards = File.read('./cards.txt')
+
   end
 
   it "Get all cards" do
@@ -25,12 +28,22 @@ describe "Api Tests" do
   it "Checks user and computer have been dealt cards" do
 
     deal = HTTParty.get url('/api/deal')
+
+    #First Dealing Round
     expect(deal['user'][0]['_id']).not_to eq deal['user'][1]['_id']
     expect(deal['user'][0]['_id']).not_to eq deal['computer'][0]['_id']
     expect(deal['user'][1]['_id']).not_to eq deal['computer'][1]['_id']
     expect(deal['user'][0]['_id']).not_to eq deal['computer'][1]['_id']
     expect(deal['user'][1]['_id']).not_to eq deal['computer'][0]['_id']
     expect(deal['computer'][0]['_id']).not_to eq deal['computer'][1]['_id']
+    #Flop Dealing Round
+    5.times do |i|
+      expect(deal['user'][0]['_id']).not_to eq deal['flop'][i]['_id']
+      expect(deal['computer'][0]['_id']).not_to eq deal['flop'][i]['_id']
+      expect(deal['computer'][1]['_id']).not_to eq deal['flop'][i]['_id']
+      expect(deal['user'][1]['_id']).not_to eq deal['flop'][i]['_id']
+    end
+    expect(deal['remainingDeck'].length).to eq 43
     exit
   end
 
