@@ -25,31 +25,40 @@ describe "Api Tests" do
   #
   # end
 
-  it "Checks user and computer have been dealt cards" do
+  it "Create new game. deal cards, check unique cards. Check flop cards. Tear down game." do
+
+    HTTParty.get url('/api/end')
+    game = HTTParty.post url('/api/game'), body:{name: "Jack", isComputer: false, name1: "Comp", isComputer1: true}
 
     deal = HTTParty.get url('/api/deal')
-
     #First Dealing Round
-    expect(deal['user'][0]['_id']).not_to eq deal['user'][1]['_id']
-    expect(deal['user'][0]['_id']).not_to eq deal['computer'][0]['_id']
-    expect(deal['user'][1]['_id']).not_to eq deal['computer'][1]['_id']
-    expect(deal['user'][0]['_id']).not_to eq deal['computer'][1]['_id']
-    expect(deal['user'][1]['_id']).not_to eq deal['computer'][0]['_id']
-    expect(deal['computer'][0]['_id']).not_to eq deal['computer'][1]['_id']
+    expect(deal['user']['hand'][0]['_id']).not_to eq deal['user']['hand'][1]['_id']
+    expect(deal['user']['hand'][0]['_id']).not_to eq deal['computer']['hand'][0]['_id']
+    expect(deal['user']['hand'][1]['_id']).not_to eq deal['computer']['hand'][1]['_id']
+    expect(deal['user']['hand'][0]['_id']).not_to eq deal['computer']['hand'][1]['_id']
+    expect(deal['user']['hand'][1]['_id']).not_to eq deal['computer']['hand'][0]['_id']
+    expect(deal['computer']['hand'][0]['_id']).not_to eq deal['computer']['hand'][1]['_id']
     #Flop Dealing Round
     5.times do |i|
-      expect(deal['user'][0]['_id']).not_to eq deal['flop'][i]['_id']
-      expect(deal['computer'][0]['_id']).not_to eq deal['flop'][i]['_id']
-      expect(deal['computer'][1]['_id']).not_to eq deal['flop'][i]['_id']
-      expect(deal['user'][1]['_id']).not_to eq deal['flop'][i]['_id']
+      expect(deal['user']['hand'][0]['_id']).not_to eq deal['flop'][i]['_id']
+      expect(deal['computer']['hand'][0]['_id']).not_to eq deal['flop'][i]['_id']
+      expect(deal['computer']['hand'][1]['_id']).not_to eq deal['flop'][i]['_id']
+      expect(deal['user']['hand'][1]['_id']).not_to eq deal['flop'][i]['_id']
     end
-    expect(deal['remainingDeck'].length).to eq 43
+    HTTParty.get url('/api/end')
     exit
   end
 
-  it "Send winning hand to the API" do
-
-  end
+  # it "Send winning hand to the API" do
+  #
+  #   HTTParty.get url('/api/end')
+  #
+  #   game = HTTParty.post url('/api/winner')
+  #
+  #   HTTParty.get url('/api/end')
+  #
+  #
+  # end
 
   it "Send losing hand to the API" do
 
@@ -84,6 +93,7 @@ describe "Api Tests" do
   end
 
   it "Check Two Pair beats One Pair" do
+
 
   end
 
